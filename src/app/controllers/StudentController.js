@@ -60,6 +60,10 @@ class StudentController {
       where: { email },
     });
 
+    if (!student) {
+      res.status(400).json({ error: 'This user does not exist' });
+    }
+
     const { id, name, idade, peso, altura } = await student.update(req.body);
 
     return res.json({
