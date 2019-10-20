@@ -17,10 +17,6 @@ class StudentController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    if (req.userId !== 1) {
-      return res.status(400).json({ error: 'Only admnistrator can do this' });
-    }
-
     const StudentExists = await Student.findOne({
       where: { email: req.body.email },
     });
@@ -59,10 +55,6 @@ class StudentController {
     }
 
     const { email } = req.body;
-
-    if (req.userId !== 1) {
-      return res.status(400).json({ error: 'Only admnistrator can do this' });
-    }
 
     const student = await Student.findOne({
       where: { email },
