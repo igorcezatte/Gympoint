@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import Plan from '../models/Plans';
+import Plan from '../models/Plan';
 
 class PlanController {
   async index(req, res) {
@@ -52,6 +52,12 @@ class PlanController {
     const plan = await Plan.findOne({
       where: { title },
     });
+
+    if (!plan) {
+      return res
+        .status(400)
+        .json({ error: 'Not exists plan with this title.' });
+    }
 
     const { duration, price } = await plan.update(req.body);
 
