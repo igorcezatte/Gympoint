@@ -3,6 +3,8 @@ import { addMonths, parseISO } from 'date-fns';
 
 import Enrrolment from '../models/Enrrolment';
 import Plan from '../models/Plan';
+import Student from '../models/Student';
+import Mail from '../../lib/Mail';
 
 class EnrrolmentController {
   async store(req, res) {
@@ -18,6 +20,10 @@ class EnrrolmentController {
 
     const { student_id, plan_id, start_date } = req.body;
 
+    const student = await Student.findOne({
+      where: { id: student_id },
+    });
+
     const plan = await Plan.findOne({
       where: { id: plan_id },
     });
@@ -31,6 +37,12 @@ class EnrrolmentController {
     Enrrolment.price = price;
 
     const end_date = addMonths(parseISO(start_date), plan.duration);
+
+    await Mail.sendMail({
+      to: `${student.name} <${student.email}>`,
+      subject: 'Plan contracted',
+      text: 'Welcome to Gympoint! We rope you enjoy and grow with us',
+    });
 
     const enrrolment = await Enrrolment.create({
       student_id,
