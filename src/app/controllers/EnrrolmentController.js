@@ -40,8 +40,12 @@ class EnrrolmentController {
 
     await Mail.sendMail({
       to: `${student.name} <${student.email}>`,
-      subject: 'Plan contracted',
-      text: 'Welcome to Gympoint! We rope you enjoy and grow with us',
+      subject: 'New plan contracted',
+      template: 'enrrolments',
+      context: {
+        student: student.name,
+        date: start_date,
+      },
     });
 
     const enrrolment = await Enrrolment.create({
