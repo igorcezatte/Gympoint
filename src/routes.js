@@ -22,6 +22,9 @@ routes.get('/plans', PlanController.index);
 routes.post('/plans', PlanController.store);
 routes.put('/plans', PlanController.update);
 
+routes.get('/enrrolments', EnrrolmentController.index);
 routes.post('/enrrolments', EnrrolmentController.store);
+routes.put('/enrrolments', EnrrolmentController.update);
+routes.delete('/enrrolments', EnrrolmentController.delete);
 
 export default routes;
