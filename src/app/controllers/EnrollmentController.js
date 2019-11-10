@@ -1,14 +1,14 @@
 import * as Yup from 'yup';
 import { addMonths, parseISO } from 'date-fns';
 
-import Enrrolment from '../models/Enrrolment';
+import Enrollment from '../models/Enrollment';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 import Mail from '../../lib/Mail';
 
-class EnrrolmentController {
+class EnrollmentController {
   async index(req, res) {
-    const enrrolments = await Enrrolment.findAll({
+    const enrollments = await Enrollment.findAll({
       attributes: [
         'id',
         'student_id',
@@ -19,7 +19,7 @@ class EnrrolmentController {
       ],
     });
 
-    return res.json(enrrolments);
+    return res.json(enrollments);
   }
 
   async store(req, res) {
@@ -35,7 +35,7 @@ class EnrrolmentController {
 
     const { student_id, plan_id, start_date } = req.body;
 
-    const enrollmentExists = await Enrrolment.findOne({
+    const enrollmentExists = await Enrollment.findOne({
       where: { student_id },
     });
 
@@ -63,21 +63,21 @@ class EnrrolmentController {
 
     const price = plan.duration * plan.price;
 
-    Enrrolment.price = price;
+    Enrollment.price = price;
 
     const end_date = addMonths(parseISO(start_date), plan.duration);
 
     await Mail.sendMail({
       to: `${student.name} <${student.email}>`,
       subject: 'New plan contracted',
-      template: 'enrrolments',
+      template: 'enrollments',
       context: {
         student: student.name,
         date: start_date,
       },
     });
 
-    const enrrolment = await Enrrolment.create({
+    const enrollment = await Enrollment.create({
       student_id,
       plan_id,
       start_date,
@@ -85,12 +85,12 @@ class EnrrolmentController {
       end_date,
     });
 
-    return res.json({ enrrolment });
+    return res.json({ enrollment });
   }
 
   async update(req, res) {
     const schema = Yup.object().shape({
-      enrrolment_id: Yup.number().required(),
+      enrollment_id: Yup.number().required(),
       start_date: Yup.date().required(),
       plan_id: Yup.number().required(),
     });
@@ -99,14 +99,14 @@ class EnrrolmentController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { enrrolment_id, start_date, plan_id } = req.body;
+    const { enrollment_id, start_date, plan_id } = req.body;
 
-    const enrrolment = await Enrrolment.findOne({
-      where: { id: enrrolment_id },
+    const enrollment = await Enrollment.findOne({
+      where: { id: enrollment_id },
     });
 
-    if (!enrrolment) {
-      return res.status(400).json({ error: 'Have no enrrolment with this ID' });
+    if (!enrollment) {
+      return res.status(400).json({ error: 'Have no enrollment with this ID' });
     }
 
     const plan = await Plan.findOne({
@@ -117,10 +117,10 @@ class EnrrolmentController {
 
     const end_date = addMonths(parseISO(start_date), plan.duration);
 
-    await enrrolment.update({ price, start_date, end_date, plan_id });
+    await enrollment.update({ price, start_date, end_date, plan_id });
 
     return res.json({
-      enrrolment_id,
+      enrollment_id,
       start_date,
       plan_id,
       price,
@@ -129,12 +129,12 @@ class EnrrolmentController {
   }
 
   async delete(req, res) {
-    const { enrrolment_id } = req.body;
+    const { enrollment_id } = req.body;
 
-    await Enrrolment.destroy({ where: { id: enrrolment_id } });
+    await Enrollment.destroy({ where: { id: enrollment_id } });
 
-    return res.json({ message: 'Enrrolment deleted' });
+    return res.json({ message: 'Enrollment deleted' });
   }
 }
 
-export default new EnrrolmentController();
+export default new EnrollmentController();
