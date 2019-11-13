@@ -35,14 +35,18 @@ class EnrollmentController {
 
     const { student_id, plan_id, start_date } = req.body;
 
-    const enrollmentExists = await Enrollment.findOne({
+    const enrollmentE = await Enrollment.findOne({
       where: { student_id },
     });
 
-    if (enrollmentExists) {
-      return res
-        .status(401)
-        .json({ error: 'This student is already enrolled at Gympoint' });
+    const today = new Date();
+
+    if (enrollmentE) {
+      if (enrollmentE.end_date > today) {
+        return res
+          .status(401)
+          .json({ error: 'This student is already enrolled at Gympoint' });
+      }
     }
 
     const student = await Student.findOne({
@@ -129,9 +133,9 @@ class EnrollmentController {
   }
 
   async delete(req, res) {
-    const { enrollment_id } = req.body;
+    const { id } = req.params;
 
-    await Enrollment.destroy({ where: { id: enrollment_id } });
+    await Enrollment.destroy({ where: { id } });
 
     return res.json({ message: 'Enrollment deleted' });
   }
