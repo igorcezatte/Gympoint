@@ -35,14 +35,14 @@ class EnrollmentController {
 
     const { student_id, plan_id, start_date } = req.body;
 
-    const enrollmentE = await Enrollment.findOne({
+    const enrollmentActive = await Enrollment.findOne({
       where: { student_id },
     });
 
     const today = new Date();
 
-    if (enrollmentE) {
-      if (enrollmentE.end_date > today) {
+    if (enrollmentActive) {
+      if (enrollmentActive.end_date > today) {
         return res
           .status(401)
           .json({ error: 'This student is already enrolled at Gympoint' });
