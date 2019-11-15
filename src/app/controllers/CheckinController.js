@@ -43,6 +43,12 @@ class CheckinController {
       where: { student_id: studentId },
     });
 
+    if (!enrollment) {
+      return res.status(400).json({
+        error: 'You have no enrollments active. Please contact the reception',
+      });
+    }
+
     const today = new Date();
 
     if (enrollment.end_date < today) {
